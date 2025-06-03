@@ -21,18 +21,18 @@ ip link del macsec0 2>/dev/null || true
 echo "Cleaned up any existing macsec0 interface"
 
 # Create MACsec interface
-ip link add link $ETH_IFACE macsec0 type macsec
+ip link add link $ETH_IFACE macsec0 type macsec encrypt on
 
 echo "MACsec interface created"
 
 # Configure TX Secure Association (SA)
-ip macsec add macsec0 tx sa 0 pn 1 on key 00 $KEY
+ip macsec add macsec0 tx sa 0 pn 1 on key 00 $KEY encrypt on
 
 echo "TX SA configured"
 
 # Configure RX Secure Channel and Secure Association (SA)
 ip macsec add macsec0 rx address $PEER_MAC port 1
-ip macsec add macsec0 rx address $PEER_MAC port 1 sa 0 pn 1 on key 00 $KEY
+ip macsec add macsec0 rx address $PEER_MAC port 1 sa 0 pn 1 on key 00 $KEY encrypt on
 
 echo "RX SA Channel configured"
 

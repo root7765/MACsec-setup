@@ -34,7 +34,7 @@ echo "TX SA configured"
 ip macsec add macsec0 rx address $PEER_MAC port 1
 ip macsec add macsec0 rx address $PEER_MAC port 1 sa 0 pn 1 on key 00 $KEY
 
-echo "RX SA 2 configured"
+echo "RX SA Channel configured"
 
 # Bring up interface and assign IP address
 ip link set macsec0 up

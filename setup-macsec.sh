@@ -1,31 +1,43 @@
 #!/bin/bash
 set -e
 
-#Einstellungen
+# Configuration
 ETH_IFACE="eth0"
-LOCAL_MAC="aa:bb:cc:dd:ee:01"
-PEER_MAC="aa:bb:cc:dd:ee:02"
+LOCAL_MAC="2c:cf:67:98:8e:92"
+PEER_MAC="2c:cf:67:98:8e:52"
 LOCAL_IP="192.168.10.1/24"
 PEER_IP="192.168.10.2"
 
-#Schlüssel einlesen
-KEY=$(cat keys/macsec.key)
+echo "Configuration loaded"
 
-#Vorherige MACsec-Verbindung löschen, falls vorhanden
+# Load MACsec key from file
+KEY=$(cat keys/macseckey)
+
+echo "Key loaded"
+
+# Delete existing MACsec interface if present
 ip link del macsec0 2>/dev/null || true
 
-#macsec0 erstellen
+echo "Cleaned up any existing macsec0 interface"
+
+# Create MACsec interface
 ip link add link $ETH_IFACE macsec0 type macsec
 
-#TX SA einrichten
+echo "MACsec interface created"
+
+# Configure TX Secure Association (SA)
 ip macsec add macsec0 tx sa 0 pn 1 on key 00 $KEY
 
-#RX SA einrichten
+echo "TX SA configured"
+
+# Configure RX Secure Channel and Secure Association (SA)
 ip macsec add macsec0 rx address $PEER_MAC port 1
 ip macsec add macsec0 rx address $PEER_MAC port 1 sa 0 pn 1 on key 00 $KEY
 
-#Interface aktivieren & IP setzen
+echo "RX SA 2 configured"
+
+# Bring up interface and assign IP address
 ip link set macsec0 up
 ip addr add $LOCAL_IP dev macsec0
 
-echo "MACsec eingerichtet auf $ETH_IFACE als macsec0"
+echo "MACsec configured on $ETH_IFACE as macsec0"
